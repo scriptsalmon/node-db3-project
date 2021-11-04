@@ -30,13 +30,13 @@ async function find() { // EXERCISE A
 }
 
 async function findById(scheme_id) { // EXERCISE B
-  const data = await db('schemes as sc')
+  const rows = await db('schemes as sc')
     .leftJoin('steps as st', 'sc.scheme_id', 'st.scheme_id')
     .select('sc.scheme_name', 'st.*')
     .orderBy('st.step_number', 'asc')
     .where('sc.scheme_id', scheme_id)
 
-  return data;
+  // return rows;
 
   /*
     1B- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`:
@@ -94,7 +94,28 @@ async function findById(scheme_id) { // EXERCISE B
           // etc
         ]
       }
+  */
 
+  let result = { steps: [] }
+
+    for(let scheme of rows) {
+      if(!result.scheme_id) {
+        result.scheme_id = scheme.scheme_id
+        result.scheme_name = scheme.scheme_name
+      } 
+      if(scheme.step_id) {
+        result.steps.push({
+          step_id: scheme.step_id,
+          step_number: scheme.step_number,
+          instructions: scheme.instructions
+        })
+      }
+    }
+
+  return result;
+
+
+  /*
     5B- This is what the result should look like _if there are no steps_ for a `scheme_id`:
 
       {
