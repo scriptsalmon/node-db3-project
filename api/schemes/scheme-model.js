@@ -29,7 +29,15 @@ async function find() { // EXERCISE A
   */
 }
 
-function findById(scheme_id) { // EXERCISE B
+async function findById(scheme_id) { // EXERCISE B
+  const data = await db('schemes as sc')
+    .leftJoin('steps as st', 'sc.scheme_id', 'st.scheme_id')
+    .select('sc.scheme_name', 'st.*')
+    .orderBy('st.step_number', 'asc')
+    .where('sc.scheme_id', scheme_id)
+
+  return data;
+
   /*
     1B- Study the SQL query below running it in SQLite Studio against `data/schemes.db3`:
 
